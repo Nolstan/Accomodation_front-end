@@ -6,5 +6,5 @@
  * from the same domain as the backend, or your production API domain.
  */
  
-var API_BASE_URL = 'http://localhost:5000';
-// var API_BASE_URL = 'https://stayhub-cupk.onrender.com';
+// var API_BASE_URL = 'http://localhost:5000';
+var API_BASE_URL = 'https://stayhub-cupk.onrender.com';
