@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Register - Hostel Accommodation</title>
+   <link rel="stylesheet" href="css/reg-styles.css">
+   <style>
+        #output {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        #output.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        #output.failure {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+   </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-header">
+            <h1>Student Registration</h1>
+        </div>
+        
+        <div class="form-body">
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required pattern="[0-9]{9,13}" title="Enter a valid phone number (9-13 digits)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" minlength="8" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" required>
+                </div>
+                
+                <button type="submit">Register</button>
+                
+                <div id="output"></div>
+            </form>
+        </div>
+        
+        <div class="form-footer">
+            <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+    </div>
+
+      <script src="../user/apiConfig.js"></script>
+   <script src="./javascript/register.js"></script>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const output = document.getElementById('output');
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                output.textContent = 'Passwords do not match.';
+                output.className = 'failure';
+                output.style.display = 'block';
+                return;
+            }
+
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+                
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password, phone })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Redirect to OTP verification page instead of login
+                    output.textContent = data.message + ' Redirecting to verification...';
+                    output.className = 'success';
+                    output.style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = `verify-otp.html?email=${encodeURIComponent(email)}`;
+                    }, 2000);
+                } else {
+                    throw new Error(data.error || 'Registration failed');
+                }
+            } catch (error) {
+                output.textContent = 'Registration failed. Please check your network and try again.';
+                output.className = 'failure';
+                output.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostels</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/hostel-list-styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img id="uniLogo" src="" alt="University Logo" class="uni-logo">
+                <h1>Available Hostels</h1>
+            </div>
+            <a href="front-page.html" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="filter-container">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by location...">
+            </div>
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="priceFilter"><i class="fas fa-money-bill-wave"></i> Max Price</label>
+                    <input type="range" id="priceFilter" min="10000" max="150000" step="5000" value="150000">
+                    <span id="priceValue">K150,000</span>
+                </div>
+                <div class="filter-group">
+                    <label for="occupancyFilter"><i class="fas fa-users"></i> Occupancy</label>
+                    <select id="occupancyFilter">
+                        <option value="">Any</option>
+                        <option value="1">1 person</option>
+                        <option value="2">2 people</option>
+                        <option value="3">3 people</option>
+                        <option value="4">4 people</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="genderFilter"><i class="fas fa-venus-mars"></i> Gender</label>
+                    <select id="genderFilter">
+                        <option value="">Any</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="both">Both</option>
+                    </select>
+                </div>
+            </div>        </div>
+
+        <div id="hostelsContainer" class="hostels-grid">
+            <!-- Hostels will be loaded here by hostel-list.js -->
+        </div>
+
+        <div id="noResults" style="display: none;">
+            <i class="fas fa-search-minus"></i>
+            <h2>No Hostels Found</h2>
+            <p>Try adjusting your filters or search term.</p>
+        </div>
+    </main>
+
+    <script src="hostel-list.js"></script>
+    <script>
+        // Small script to update the price display for the range slider
+        const priceFilter = document.getElementById('priceFilter');
+        const priceValue = document.getElementById('priceValue');
+        if (priceFilter && priceValue) {
+            priceFilter.addEventListener('input', () => {
+                priceValue.textContent = `K${parseInt(priceFilter.value).toLocaleString()}`;
+            });
+        }
+    </script>
+</body>
+</html>

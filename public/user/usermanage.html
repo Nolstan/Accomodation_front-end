@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Listings Dashboard</title>
+  <link rel="stylesheet" href="css/usermanager.css">
+</head>
+<body>
+
+  <div class="dashboard-container">
+    <h2>Your Listings</h2>
+    
+    <!-- Tab navigation -->
+    <div class="tab-container">
+      <div class="tab active" onclick="switchTab('houses')">Houses</div>
+      <div class="tab" onclick="switchTab('hostels')">Hostels</div>
+    </div>
+    
+    <!-- Houses Tab Content -->
+    <div id="houses-tab" class="tab-content active">
+      <h3>Your House Listings</h3>
+      
+      <!-- Example house listing -->
+      <div class="listing" data-id="101">
+        <h3>Listing #101</h3>
+
+        <label>District</label>
+        <input type="text" value="Lilongwe" readonly />
+
+        <label>Area</label>
+        <input type="text" value="Area 43" readonly />
+
+        <label>Cost (MWK)</label>
+        <input type="number" value="150000" readonly />
+
+        <label>Description</label>
+        <textarea readonly>3 bedrooms, water available, car accessible.</textarea>
+
+        <div class="phone-group">
+          <div>
+            <label>Landlord Phone</label>
+            <input type="tel" value="0999001122" readonly />
+          </div>
+          <div>
+            <label>Your Phone (for payment)</label>
+            <input type="tel" value="0888112233" readonly />
+          </div>
+        </div>
+
+        <label>Uploaded Photos</label>
+        <div class="gallery">
+          <img src="../image/mubas1 (1).jpg" alt="House photo 1" onclick="openModal(this.src)" />
+          <img src="../image/mubas1 (1).jpg" alt="House photo 1" onclick="openModal(this.src)" />
+          <img src="../image/mubas1 (2).jpg" alt="House photo 1" onclick="openModal(this.src)" />
+          <img src="../image/mubas1 (2).jpg" alt="House photo 1" onclick="openModal(this.src)" />
+          <img src="../image/mubas1 (2).jpg" alt="House photo 1" onclick="openModal(this.src)" />
+          <img src="../image/mubas1 (2).jpg" alt="House photo 1" onclick="openModal(this.src)" />
+        </div>
+
+        <div class="actions">
+          <button class="edit-btn" onclick="enableEdit(this)">Edit</button>
+          <button class="save-btn" onclick="saveChanges(this)">Save</button>
+          <button class="delete-btn" onclick="deleteListing(this)">Delete Listing</button>
+        </div>
+      </div>
+      
+      <!-- More house listings can be added here -->
+    </div>
+    
+    <!-- Hostels Tab Content -->
+    <div id="hostels-tab" class="tab-content">
+      <h3>Your Hostel Listings</h3>
+      
+      <!-- Example hostel listing -->
+      <div class="submission" data-id="1">
+        <h3>Listing #1</h3>
+        <label>Room Price (per month)</label>
+        <input type="number" value="50000" readonly />
+        <label>Hostel Location</label>
+        <input type="text" value="Chitawira, Blantyre" readonly />
+        <label>People per Room</label>
+        <input type="number" value="2" readonly />
+        <label>Estimated Time to Campus</label>
+        <input type="text" value="10 mins walk" readonly />
+        <label>Landlord Phone</label>
+        <input type="tel" value="0999123456" readonly />
+        <label>Payment Number</label>
+        <input type="tel" value="0888123456" readonly />
+        <label>Hostel Type</label>
+        <select disabled>
+          <option value="male">Male Only</option>
+          <option value="female">Female Only</option>
+          <option value="both" selected>Both Genders</option>
+        </select>
+        <label>Description</label>
+        <textarea readonly>Spacious self-contained room with a balcony.</textarea>
+        <label>Rules</label>
+        <textarea readonly>No loud music after 9pm. Visitors allowed until 8pm.</textarea>
+        <label>Water & Electricity Included?</label>
+        <select disabled>
+          <option value="yes" selected>Yes</option>
+          <option value="no">No</option>
+        </select>
+        <label>Uploaded Images</label>
+        <div class="gallery">
+          <img src="../image/mubas1 (1).jpg" alt="Room Image 1" onclick="openModal(this.src)" />
+          <img src="../image/mubas1 (2).jpg" alt="Room Image 2" onclick="openModal(this.src)" />
+          <img src="../image/mubas1 (2).jpg" alt="Room Image 3" onclick="openModal(this.src)" />
+        </div>
+        <div class="actions">
+          <button class="edit-btn" onclick="enableEdit(this)">Edit</button>
+          <button class="save-btn" onclick="saveChanges(this)">Save</button>
+          <button class="delete-btn" onclick="deleteListing(this)">Delete Listing</button>
+        </div>
+      </div>
+      
+      <!-- More hostel listings can be added here -->
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div id="imageModal" class="modal" onclick="closeModal()">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <img class="modal-content" id="modalImage" />
+  </div>
+
+  <script>
+    // Tab switching functionality
+    function switchTab(tabName) {
+      // Update tab appearance
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+      
+      // Update content visibility
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+    }
+    
+    // House listing functions
+    function enableEdit(btn) {
+      const container = btn.closest('.listing, .submission');
+      container.querySelectorAll('input[readonly], textarea[readonly], select[disabled]').forEach(el => {
+        el.removeAttribute('readonly');
+        el.removeAttribute('disabled');
+        el.style.backgroundColor = '#fff';
+        el.style.cursor = 'auto';
+      });
+      btn.style.display = 'none';
+      container.querySelector('.save-btn').style.display = 'inline-block';
+    }
+
+    function saveChanges(btn) {
+      const container = btn.closest('.listing, .submission');
+      
+      // Gather data to send to backend
+      const isHostel = container.classList.contains('submission');
+      const data = {
+        id: container.dataset.id,
+        type: isHostel ? 'hostel' : 'house'
+      };
+      
+      if (isHostel) {
+        // Hostel data
+        data.roomPrice = container.querySelector('input[type="number"]').value;
+        data.bookingFee = container.querySelectorAll('input[type="number"]')[1].value;
+        data.location = container.querySelector('input[type="text"]').value;
+        data.peoplePerRoom = container.querySelectorAll('input[type="number"]')[2].value;
+        data.timeToCampus = container.querySelectorAll('input[type="text"]')[1].value;
+        data.landlordPhone = container.querySelectorAll('input[type="tel"]')[0].value;
+        data.paymentNumber = container.querySelectorAll('input[type="tel"]')[1].value;
+        data.hostelType = container.querySelector('select').value;
+        data.description = container.querySelector('textarea').value;
+        data.rules = container.querySelectorAll('textarea')[1].value;
+        data.utilitiesIncluded = container.querySelectorAll('select')[1].value;
+      } else {
+        // House data
+        data.district = container.querySelector('input[type="text"]').value;
+        data.area = container.querySelectorAll('input[type="text"]')[1].value;
+        data.cost = container.querySelector('input[type="number"]').value;
+        data.description = container.querySelector('textarea').value;
+        data.landlordPhone = container.querySelectorAll('input[type="tel"]')[0].value;
+        data.uploaderPhone = container.querySelectorAll('input[type="tel"]')[1].value;
+      }
+      
+      console.log('Saving data:', data);
+
+      // TODO: Send data to backend to update listing
+
+      container.querySelectorAll('input, textarea, select').forEach(el => {
+        el.setAttribute('readonly', true);
+        el.setAttribute('disabled', true);
+        el.style.backgroundColor = '#eee';
+        el.style.cursor = 'not-allowed';
+      });
+      btn.style.display = 'none';
+      container.querySelector('.edit-btn').style.display = 'inline-block';
+
+      alert('Changes saved! (Connect this to backend)');
+    }
+
+    function deleteListing(btn) {
+      const container = btn.closest('.listing, .submission');
+      if(confirm('Are you sure you want to delete this listing? This means it has been booked.')) {
+        // TODO: Send delete request to backend
+        container.remove();
+      }
+    }
+
+    function openModal(src) {
+      document.getElementById('modalImage').src = src;
+      document.getElementById('imageModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
