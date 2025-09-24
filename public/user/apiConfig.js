@@ -6,5 +6,5 @@
  * from the same domain as the backend, or your production API domain.
  */
  
-var API_BASE_URL = 'https://stayhub-1hqw.onrender.com';
+var API_BASE_URL = 'https://stayhub-cupk.onrender.com';
 
