@@ -33,11 +33,11 @@
                     
                     // Redirect based on role
                     if (data.user.role === 'superadmin') {
-                        window.location.href = '/public/admin/admin-nav-page.html';
+                        window.location.href = './public/admin/admin-nav-page.html';
                     } else if (data.user.role === 'admin') {
-                        window.location.href = '/public/admin/admin-nav-page.html';
+                        window.location.href = './public/admin/admin-nav-page.html';
                     } else {
-                        window.location.href = '/public/user/front-page.html';
+                        window.location.href = './public/user/front-page.html';
                     }
                 } else {
                     throw new Error('Invalid login response');
