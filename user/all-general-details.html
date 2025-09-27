@@ -184,7 +184,7 @@
     </main>
 
     <!-- This script tag loads the configuration and makes the API_BASE_URL variable available globally -->
-    <script src="../configs/apiConfig.js"></script>
+    <script src="../configs/apiConfigs.js"></script>
     <script>
         // The API_BASE_URL variable is now available from the script loaded above. No require() needed.
         
@@ -203,7 +203,12 @@
 
         async function fetchHouseDetails() {
             try {
-                const res = await fetch(`${API_BASE_URL}/api/general-houses/${houseId}`);
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${API_BASE_URL}/api/general-houses/${houseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
               
                 if (!res.ok) throw new Error('Failed to fetch house');
                 const house = await res.json();

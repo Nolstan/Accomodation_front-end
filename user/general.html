@@ -73,7 +73,21 @@ body { font-family:'Segoe UI', system-ui,sans-serif; background:#f8fafc; color:#
 .footer-links { display:flex; justify-content:center; gap:2rem; margin:1rem 0; }
 .footer-links a { color:rgba(255,255,255,0.8); text-decoration:none; transition:var(--transition); }
 .footer-links a:hover { color:white; }
+
+
+    /* Responsive styles for mobile */
+    @media (max-width: 768px) {
+        .heading-container {
+            flex-direction: row;
+            gap: 1rem;
+        }
+        .main-content {
+            margin-top: 80px; /* Adjust for header height */
+        }
+        .available-rooms { grid-template-columns: 1fr; }
+    }
 </style>
+
 </head>
 <body>
 <div class="header-container">
