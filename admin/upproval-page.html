@@ -265,7 +265,7 @@
       if (e.target.classList.contains('delete-btn')) {
         if (confirm('Are you sure you want to delete this hostel?')) {
           try {
-            const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+            const res = await fetch(`${API_BASE_URL}/api/hostel-approvals/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
             if (!res.ok) throw new Error('Deletion failed');
             card.remove();
           } catch (err) { alert(`Error: ${err.message}`); }
@@ -289,7 +289,7 @@
             utilities: document.getElementById('modalUtilities').checked,
         };
         try {
-            const res = await fetch(`${API_BASE_URL}/${id}/approve`, {
+            const res = await fetch(`${API_BASE_URL}/api/hostel-approvals/${id}/approve`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
                 body: JSON.stringify(updatedData)
