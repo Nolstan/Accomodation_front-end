@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Register - Hostel Accommodation</title>
-   <link rel="stylesheet" href="assets/css/reg-styles.css">
-   <style>
+    <link rel="stylesheet" href="assets/css/reg-styles.css">
+    <style>
         #output {
             margin-top: 15px;
             padding: 12px;
             border-radius: 5px;
             text-align: center;
             font-size: 0.9em;
+            display: none;
         }
         #output.success {
             background-color: #d4edda;
@@ -21,7 +22,25 @@
             background-color: #f8d7da;
             color: #721c24;
         }
-   </style>
+        #register-btn[disabled] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -56,7 +75,7 @@
                     <input type="password" id="confirm-password" required>
                 </div>
                 
-                <button type="submit">Register</button>
+                <button type="submit" id="register-btn">Register</button>
                 
                 <div id="output"></div>
             </form>
@@ -67,20 +86,30 @@
         </div>
     </div>
 
-      <script src="configs/apiConfigs.js"></script>
+    <script src="configs/apiConfigs.js"></script>
 
     <script>
         document.getElementById('register-form').addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const output = document.getElementById('output');
+            const registerBtn = document.getElementById('register-btn');
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Reset output and disable button
+            output.textContent = '';
+            output.className = '';
+            output.style.display = 'none';
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="spinner"></span>Registering...';
 
             if (password !== confirmPassword) {
                 output.textContent = 'Passwords do not match.';
                 output.className = 'failure';
                 output.style.display = 'block';
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Register';
                 return;
             }
 
@@ -90,7 +119,6 @@
 
             try {
                 const response = await fetch(`${API_BASE_URL}/api/users/register`, {
-                
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email, password, phone })
@@ -99,7 +127,6 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Redirect to OTP verification page instead of login
                     output.textContent = data.message + ' Redirecting to verification...';
                     output.className = 'success';
                     output.style.display = 'block';
@@ -113,6 +140,10 @@
                 output.textContent = 'Registration failed. Please check your network and try again.';
                 output.className = 'failure';
                 output.style.display = 'block';
+            } finally {
+                // Only re-enable if not redirecting
+                registerBtn.disabled = false;
+                registerBtn.textContent = 'Register';
             }
         });
     </script>
