@@ -313,72 +313,51 @@
             margin-bottom: 1rem;
         }
 
-        /* --- New Slider Styles --- */
-        .slider-container {
-            position: relative;
-            max-width: 800px;
-            margin: 2rem auto;
-            overflow: hidden;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-        }
+        /* --- Gallery and Lightbox Styles (from general-details) --- */
+        .gallery-container {display:grid; gap:1rem;}
+        .main-image {width:100%; height:400px; object-fit:contain; border-radius: var(--border-radius); box-shadow: var(--shadow); background-color: #e9ecef; cursor: pointer;}
+        .thumbnails {display:flex; gap:0.5rem; overflow-x:auto;}
+        .thumbnail {width:100px; height:75px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; flex-shrink:0;}
+        .thumbnail.active, .thumbnail:hover {transform: scale(1.05); border-color: var(--mubas-light-blue);}
 
-        .slider-wrapper {
-            display: flex;
-            transition: transform 0.4s ease-in-out;
-        }
-
-        .slide {
-            min-width: 100%;
-            position: relative;
-        }
-
-        .slide img {
+        .lightbox {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 2000; /* Higher than header */
+            padding-top: 60px;
+            left: 0;
+            top: 0;
             width: 100%;
-            height: 450px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.4);
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
             align-items: center;
             justify-content: center;
-            transition: background-color 0.3s;
-            z-index: 10;
         }
-
-        .slider-btn:hover { background-color: rgba(0, 0, 0, 0.7); }
-        .prev-btn { left: 15px; }
-        .next-btn { right: 15px; }
-
-        .slider-dots {
-            position: absolute;
-            bottom: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
+        .lightbox.visible { display: flex; }
+        .lightbox-content {
+            margin: auto; display: block; width: auto;
+            max-width: 90vw; max-height: 85vh;
+            object-fit: contain;
+            animation-name: zoom; animation-duration: 0.4s;
         }
-
-        .dot {
-            width: 10px; height: 10px; border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.6);
-            cursor: pointer; transition: background-color 0.3s;
+        @keyframes zoom { from {transform:scale(0)} to {transform:scale(1)} }
+        .lightbox-close {
+            position: absolute; top: 15px; right: 35px;
+            color: #f1f1f1; font-size: 40px; font-weight: bold;
+            transition: 0.3s; cursor: pointer;
         }
-        .dot.active { background-color: white; }
+        .lightbox-close:hover, .lightbox-close:focus { color: #bbb; text-decoration: none; }
+        .lightbox-prev, .lightbox-next {
+            cursor: pointer; position: absolute; top: 50%;
+            width: auto; padding: 16px; margin-top: -50px;
+            color: white; font-weight: bold; font-size: 20px;
+            transition: 0.6s ease; border-radius: 0 3px 3px 0;
+            user-select: none; -webkit-user-select: none;
+        }
+        .lightbox-next { right: 0; border-radius: 3px 0 0 3px; }
+        .lightbox-prev { left: 0; border-radius: 0 3px 3px 0; }
+        .lightbox-prev:hover, .lightbox-next:hover { background-color: rgba(0, 0, 0, 0.8); }
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -387,8 +366,8 @@
                 gap: 1rem;
                 text-align: center;
             }
-            .slide img {
-                height: 300px;
+            .main-image {
+                height: 300px; /* Adjust main image height on mobile */
             }
             .info-grid {
                 grid-template-columns: 1fr;
@@ -419,7 +398,7 @@
     <header class="header">
         <div class="header-content">
             <div class="logo-container">
-                <img src="../assets/image/mubas-logo.jpg" alt="MUBAS Logo" class="mubas-logo" />
+                <img src="./image/mubas-logo.jpg" alt="MUBAS Logo" class="mubas-logo" />
                 <h1>Hostel Details</h1>
             </div>
             <button class="back-button" onclick="window.history.back()">
@@ -434,12 +413,9 @@
         </div>
 
         <div id="content" style="display: none;">
-            <!-- New Slider Gallery -->
-            <div class="slider-container">
-                <div class="slider-wrapper"></div>
-                <button class="slider-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
-                <button class="slider-btn next-btn"><i class="fas fa-chevron-right"></i></button>
-                <div class="slider-dots"></div>
+            <div class="gallery-container">
+                <img id="mainImage" class="main-image" alt="Hostel Image"/>
+                <div class="thumbnails" id="imageGallery"></div>
             </div>
             
             <div class="details-container">
@@ -508,6 +484,14 @@
             <button class="btn btn-primary" style="margin-top: 1rem;" onclick="window.location.reload()">
                 <i class="fas fa-redo"></i> Try Again
             </button>
+        </div>
+
+        <!-- Lightbox Modal -->
+        <div id="lightbox-modal" class="lightbox">
+            <span class="lightbox-close">&times;</span>
+            <img class="lightbox-content" id="lightbox-image">
+            <a class="lightbox-prev">&#10094;</a>
+            <a class="lightbox-next">&#10095;</a>
         </div>
     </main>
 
@@ -593,24 +577,17 @@
         }
         
         function setupImageGalleryAndLightbox(photos) {
-            const sliderContainer = document.querySelector('.slider-container');
-            const sliderWrapper = document.querySelector('.slider-wrapper');
-            const dotsContainer = document.querySelector('.slider-dots');
-            const prevBtn = document.querySelector('.prev-btn');
-            const nextBtn = document.querySelector('.next-btn');
- 
+            const mainImg = document.getElementById('mainImage');
+            const gallery = document.getElementById('imageGallery');
             const defaultImage = 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80';
  
             if (!photos || !Array.isArray(photos) || photos.length === 0) {
-                sliderWrapper.innerHTML = `<div class="slide"><img src="${defaultImage}" alt="No image available"></div>`;
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
+                mainImg.src = defaultImage;
+                mainImg.alt = 'No image available';
                 return;
             }
  
             // --- Image Optimization ---
-            // This function inserts Cloudinary transformations to serve optimized images.
-            // This dramatically improves performance for large photos.
             const getOptimizedUrl = (url, transformations) => {
                 if (!url || !url.includes('res.cloudinary.com')) {
                     return url; // Not a Cloudinary URL, return as is
@@ -623,72 +600,83 @@
                 return `${parts[0]}/upload/${transformations}/${parts[1]}`;
             };
  
-            // Create two sets of URLs:
-            // 1. Optimized for the slider (smaller, cropped to fit)
-            const sliderPhotoUrls = photos.map(url => getOptimizedUrl(url, 'w_800,h_450,c_fill,f_auto,q_auto'));
-            // 2. Optimized for the lightbox (larger, high quality, fits within screen)
-            const lightboxPhotoUrls = photos.map(url => getOptimizedUrl(url, 'w_1600,h_1200,c_limit,f_auto,q_auto'));
+            const photoUrls = photos.map(url => getOptimizedUrl(url, 'w_1200,h_800,c_limit,f_auto,q_auto'));
+            const thumbUrls = photos.map(url => getOptimizedUrl(url, 'w_200,h_150,c_fill,f_auto,q_auto'));
  
-            sliderWrapper.innerHTML = '';
-            dotsContainer.innerHTML = '';
+            mainImg.src = photoUrls[0];
+            mainImg.onerror = function() { this.src = defaultImage; };
+            gallery.innerHTML = '';
  
-            sliderPhotoUrls.forEach((url, index) => {
-                const slide = document.createElement('div');
-                slide.className = 'slide';
-                slide.innerHTML = `<img src="${url}" alt="Hostel photo ${index + 1}" draggable="false">`;
-                sliderWrapper.appendChild(slide);
- 
-                const dot = document.createElement('span');
-                dot.className = 'dot';
-                dot.dataset.index = index;
-                dot.addEventListener('click', () => goToSlide(index));
-                dotsContainer.appendChild(dot);
+            thumbUrls.forEach((thumbUrl, index) => {
+                const img = document.createElement('img');
+                img.src = thumbUrl;
+                img.alt = `Hostel photo ${index + 1}`;
+                img.className = 'thumbnail';
+                if (index === 0) img.classList.add('active');
+                img.addEventListener('click', () => {
+                    mainImg.src = photoUrls[index];
+                    document.querySelector('.thumbnail.active')?.classList.remove('active');
+                    img.classList.add('active');
+                });
+                img.onerror = function() { this.style.display = 'none'; };
+                gallery.appendChild(img);
             });
  
+            // --- Lightbox Logic ---
+            const modal = document.getElementById('lightbox-modal');
+            const modalImg = document.getElementById('lightbox-image');
+            const closeBtn = document.querySelector('.lightbox-close');
+            const prevBtn = document.querySelector('.lightbox-prev');
+            const nextBtn = document.querySelector('.lightbox-next');
             let currentIndex = 0;
- 
-            function updateSlider() {
-                sliderWrapper.style.transform = `translateX(-${currentIndex * 100}%)`;
-                document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('active'));
-                const activeDot = document.querySelector(`.dot[data-index="${currentIndex}"]`);
-                if (activeDot) activeDot.classList.add('active');
-            }
- 
-            function goToSlide(index) {
+
+            function openModal(index) {
                 currentIndex = index;
-                updateSlider();
+                modal.classList.add('visible');
+                modalImg.src = photoUrls[currentIndex];
+                updateNavButtons();
             }
- 
+
+            function closeModal() { modal.classList.remove('visible'); }
+
             function showNext() {
-                currentIndex = (currentIndex + 1) % sliderPhotoUrls.length;
-                updateSlider();
+                if (currentIndex < photoUrls.length - 1) {
+                    currentIndex++;
+                    modalImg.src = photoUrls[currentIndex];
+                    updateNavButtons();
+                }
             }
- 
+
             function showPrev() {
-                currentIndex = (currentIndex - 1 + sliderPhotoUrls.length) % sliderPhotoUrls.length;
-                updateSlider();
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    modalImg.src = photoUrls[currentIndex];
+                    updateNavButtons();
+                }
             }
+            
+            function updateNavButtons() {
+                prevBtn.style.display = currentIndex === 0 ? 'none' : 'block';
+                nextBtn.style.display = currentIndex === photoUrls.length - 1 ? 'none' : 'block';
+            }
+
+            mainImg.addEventListener('click', () => {
+                const currentSrc = mainImg.src;
+                const index = photoUrls.findIndex(p => p === currentSrc);
+                openModal(index !== -1 ? index : 0);
+            });
  
+            closeBtn.addEventListener('click', closeModal);
             nextBtn.addEventListener('click', showNext);
             prevBtn.addEventListener('click', showPrev);
- 
-            // Swipe functionality
-            let touchstartX = 0;
-            let touchendX = 0;
-            const swipeThreshold = 50; // Minimum pixels for a swipe
-
-            sliderContainer.addEventListener('touchstart', (e) => {
-                touchstartX = e.changedTouches[0].screenX;
-            }, { passive: true });
-
-            sliderContainer.addEventListener('touchend', (e) => {
-                touchendX = e.changedTouches[0].screenX;
-                if (touchendX < touchstartX - swipeThreshold) showNext();
-                if (touchendX > touchstartX + swipeThreshold) showPrev();
+            modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+            document.addEventListener('keydown', (e) => {
+                if (modal.classList.contains('visible')) {
+                    if (e.key === 'Escape') closeModal();
+                    if (e.key === 'ArrowRight') showNext();
+                    if (e.key === 'ArrowLeft') showPrev();
+                }
             });
- 
-            // Initial slider state
-            updateSlider();
         }
 
         function setupCollapsibleText(elementId, lineLimit) {
