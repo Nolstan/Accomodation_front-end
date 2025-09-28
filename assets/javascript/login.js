@@ -8,6 +8,7 @@
             
             errorElement.textContent = '';
             button.disabled = true;
+            button.innerHTML = '<span class="spinner"></span>Logging in...';
 
             fetch(`${API_BASE_URL}/api/users/login`, {
                 method: 'POST',
@@ -49,5 +50,6 @@
             })
             .finally(() => {
                 button.disabled = false;
+                button.innerHTML = 'Login';
             });
         });

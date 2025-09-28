@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hostel Login</title>
      <link rel="stylesheet" href="assets/css/login-styles.css">
+     <style>
+        #login-btn[disabled] {
+            opacity: 0.7;
+            cursor: wait;
+        }
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+     </style>
 </head>
 <body>
     <div class="login-container">
@@ -29,8 +47,8 @@
         </form>
         
         <div class="links">
-<a href="register-user.html">Create an account</a>
-<a href="forgot-password.html">Forgot password?</a>
+                <a href="register-user.html">Create an account</a>
+                <a href="forget-password.html">Forgot password?</a>
 
         </div>
     </div>
