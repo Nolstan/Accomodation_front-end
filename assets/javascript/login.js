@@ -1,20 +1,19 @@
+
         document.getElementById('login-form').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const button = document.getElementById('login-btn');
             const errorElement = document.getElementById('error');
-            const identifier = document.getElementById('identifier').value.trim();
+            const identifier = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
             errorElement.textContent = '';
             button.disabled = true;
-            button.innerHTML = '<span class="spinner"></span>Logging in...';
+            button.innerHTML = '<span class="spinner"></span> Logging in...';
 
             fetch(`${API_BASE_URL}/api/users/login`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ identifier, password })
             })
             .then(response => {
@@ -32,10 +31,7 @@
                     localStorage.setItem('role', data.user.role);
                     localStorage.setItem('username', data.user.username);
                     
-                    // Redirect based on role
-                    if (data.user.role === 'superadmin') {
-                        window.location.href = 'admin/admin-nav-page.html';
-                    } else if (data.user.role === 'admin') {
+                    if (data.user.role === 'superadmin' || data.user.role === 'admin') {
                         window.location.href = 'admin/admin-nav-page.html';
                     } else {
                         window.location.href = 'user/front-page.html';
