@@ -514,6 +514,7 @@
         } else {
             // Fetch hostel details
             fetchHostelDetails();
+            fetchAgentContacts(); // Fetch agent contacts as well
         }
 
         async function fetchHostelDetails() {
@@ -553,18 +554,25 @@
             setupCollapsibleText('hostelDescription', 7);
             setupCollapsibleText('hostelRules', 7);
 
-            // Update contact links dynamically
-            const whatsappBtn = document.getElementById('whatsappBtn');
-            const callBtn = document.getElementById('callBtn');
-            if (hostel.landlordPhone) {
-                const phoneNumber = hostel.landlordPhone.replace(/\D/g, ''); // Remove non-digits
-                const msisdn = phoneNumber.startsWith('265') ? phoneNumber : `265${phoneNumber.slice(-9)}`;
-                if (whatsappBtn) whatsappBtn.href = `https://wa.me/${msisdn}`;
-                if (callBtn) callBtn.href = `tel:+${msisdn}`;
-            }
-
             // Setup the image gallery and lightbox
             setupImageGalleryAndLightbox(hostel.photos);
+        }
+
+        async function fetchAgentContacts() {
+            try {
+                // This endpoint should return the global contacts for the hostel agent
+                const res = await fetch(`${API_BASE_URL}/api/contact-info`);
+                if (!res.ok) throw new Error('Failed to fetch agent contacts');
+                const contacts = await res.json();
+
+                // Populate ALL agent contact buttons with the correct links
+                document.getElementById('callBtn').href = `tel:${contacts.phoneNumber}`;
+                document.getElementById('whatsappBtn').href = contacts.whatsappLink;
+                document.getElementById('facebookBtn').href = contacts.facebookLink;
+            } catch (error) {
+                console.error('Could not load agent contacts:', error);
+                // If it fails, the hardcoded link will be used as a fallback.
+            }
         }
 
         function showError(message) {
